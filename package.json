@@ -1,0 +1,7 @@
+{
+  "name": "younited-functions",
+  "version": "1.0.0",
+  "dependencies": {
+    "openai": "^5.2.0"
+  }
+}
