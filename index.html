@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Younited – Self Discovery Assessment</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 40px;
+  }
+
+  .assessment-wrapper {
+    max-width: 700px;
+    margin: auto;
+    background: #fff;
+    padding: 40px;
+    position: relative;
+  }
+
+  .question {
+    display: none; /* only one visible at a time */
+  }
+
+  .question.active {
+    display: block;
+  }
+
+  h2 {
+    margin-bottom: 10px;
+  }
+
+  .description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  select {
+    font-size: 18px;
+    padding: 8px;
+    width: 100%;
+    margin: 20px 0;
+  }
+
+  button {
+    margin-top: 30px;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="assessment-wrapper" id="assessmentWrapper"></div>
+
+<script>
+/* ============================
+   QUESTIONS WITH DESCRIPTIONS
+============================ */
+
+const categories = [
+  {
+    name: "Physical Health",
+    key: "physical",
+    questions: [
+      { text: "Energy levels throughout the day", description: "How energized do you feel from morning to evening?" },
+      { text: "Sleep quality", description: "Are you able to sleep restfully and wake up refreshed?" },
+      { text: "Nutrition habits", description: "How balanced and consistent is your diet?" },
+      { text: "Physical activity / movement", description: "How often and effectively do you move your body?" },
+      { text: "Overall physical wellbeing", description: "Your overall feeling of health and fitness." }
+    ]
+  },
+  {
+    name: "Mental Health",
+    key: "mental",
+    questions: [
+      { text: "Stress levels", description: "How well do you manage daily stress and pressure?" },
+      { text: "Focus and mental clarity", description: "How clear and sharp is your thinking?" },
+      { text: "Decision-making confidence", description: "How confident are you in making choices?" },
+      { text: "Mental energy / alertness", description: "How alert and mentally active do you feel?" },
+      { text: "Overall mental wellbeing", description: "Your overall mental balance and resilience." }
+    ]
+  },
+  {
+    name: "Emotional Health",
+    key: "emotional",
+    questions: [
+      { text: "Emotional resilience", description: "How well can you bounce back from setbacks?" },
+      { text: "Ability to manage emotions", description: "Can you handle your emotions constructively?" },
+      { text: "Confidence / self-esteem", description: "How positive is your self-image?" },
+      { text: "Stress coping ability", description: "How effectively do you cope with emotional stress?" },
+      { text: "Overall emotional wellbeing", description: "Your overall emotional balance and satisfaction." }
+    ]
+  },
+  {
+    name: "Relationships",
+    key: "relationships",
+    questions: [
+      { text: "Quality of close relationships", description: "How fulfilling are your close connections?" },
+      { text: "Communication skills", description: "How effectively do you communicate with others?" },
+      { text: "Support network strength", description: "Do you have people to rely on when needed?" },
+      { text: "Boundaries with others", description: "How healthy are your personal boundaries?" },
+      { text: "Overall relationship wellbeing", description: "Your overall satisfaction with relationships." }
+    ]
+  },
+  {
+    name: "Career & Purpose",
+    key: "career",
+    questions: [
+      { text: "Job satisfaction", description: "How satisfied are you with your work?" },
+      { text: "Sense of purpose", description: "Do you feel your work aligns with your purpose?" },
+      { text: "Motivation & engagement", description: "How engaged and motivated are you?" },
+      { text: "Work–life balance", description: "How well do you balance work and personal life?" },
+      { text: "Overall career wellbeing", description: "Your overall sense of career satisfaction." }
+    ]
+  },
+  {
+    name: "Mindfulness / Spiritual",
+    key: "spiritual",
+    questions: [
+      { text: "Presence / mindfulness in daily life", description: "How mindful are you in day-to-day moments?" },
+      { text: "Inner calm and peace", description: "How calm and centered do you feel internally?" },
+      { text: "Connection to purpose or meaning", description: "Do you feel aligned with a deeper purpose?" },
+      { text: "Self-reflection habits", description: "How often do you reflect on your thoughts and actions?" },
+      { text: "Overall spiritual wellbeing", description: "Your overall spiritual and mindfulness balance." }
+    ]
+  }
+];
+
+/* ============================
+   DROPDOWN OPTIONS (1–5)
+============================ */
+
+const dropdownOptions = [
+  { value: 1, label: "1 (Not good)" },
+  { value: 2, label: "2 (Below average)" },
+  { value: 3, label: "3 (Average)" },
+  { value: 4, label: "4 (Good)" },
+  { value: 5, label: "5 (Excellent)" }
+];
+
+/* ============================
+   STATE
+============================ */
+
+let currentIndex = 0;
+const answers = {};
+
+/* ============================
+   BUILD QUESTIONS
+============================ */
+
+const wrapper = document.getElementById("assessmentWrapper");
+
+// Flatten all questions into single array with category info
+const flatQuestions = [];
+categories.forEach(cat => {
+  cat.questions.forEach(q => {
+    flatQuestions.push({ category: cat.key, text: q.text, description: q.description });
+  });
+});
+
+flatQuestions.forEach((q, index) => {
+  const div = document.createElement("div");
+  div.className = "question" + (index === 0 ? " active" : "");
+
+  let selectHTML = `<select id="select-${index}">`;
+  dropdownOptions.forEach(opt => {
+    selectHTML += `<option value="${opt.value}">${opt.label}</option>`;
+  });
+  selectHTML += `</select>`;
+
+  div.innerHTML = `
+    <h2>${q.text}</h2>
+    <div class="description">${q.description}</div>
+    ${selectHTML}
+    <button onclick="next(${index})">
+      ${index === flatQuestions.length - 1 ? "Get My Life Report" : "Next"}
+    </button>
+  `;
+
+  wrapper.appendChild(div);
+});
+
+/* ============================
+   FUNCTIONS
+============================ */
+
+function next(index) {
+  const select = document.getElementById(`select-${index}`);
+  const question = flatQuestions[index];
+
+  if (!answers[question.category]) answers[question.category] = {};
+  answers[question.category][question.text] = Number(select.value);
+
+  // Hide current
+  document.querySelectorAll(".question")[index].classList.remove("active");
+
+  currentIndex++;
+  if (currentIndex < flatQuestions.length) {
+    document.querySelectorAll(".question")[currentIndex].classList.add("active");
+  } else {
+    submitAssessment();
+  }
+}
+
+/* ============================
+   SUBMIT TO BACKEND (OPENAI)
+============================ */
+
+function submitAssessment() {
+  const endpoint = "https://your-backend-url.com/life-report";
+
+  fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ assessment: answers })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.body.innerHTML = `
+      <div style="max-width:800px;margin:40px auto;font-family:Arial">
+        ${data.report_html}
+      </div>
+    `;
+  })
+  .catch(err => {
+    alert("There was an error generating your report.");
+    console.error(err);
+  });
+}
+</script>
+
+</body>
+</html>
