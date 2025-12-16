@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <title>Younited – Self Discovery Assessment</title>
+
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -10,6 +11,7 @@
     margin: 0;
     padding: 40px;
   }
+
   .assessment-wrapper {
     max-width: 700px;
     margin: auto;
@@ -17,43 +19,71 @@
     padding: 40px;
     position: relative;
   }
-  .spinner {
-  margin: 0 auto;
-  width: 50px;
-  height: 50px;
-  border: 6px solid #ccc;
-  border-top-color: #0077ff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-  .question { display: none; }
-  .question.active { display: block; }
-  h2 { margin-bottom: 10px; }
-  .description { font-size: 14px; color: #555; margin-bottom: 20px; }
-  select { font-size: 18px; padding: 8px; width: 100%; margin: 20px 0; }
-  button { margin-top: 30px; padding: 12px 20px; font-size: 16px; cursor: pointer; }
-  #lifeReport { max-width: 800px; margin: 40px auto; font-family: Arial, sans-serif; }
+  .question {
+    display: none;
+  }
+
+  .question.active {
+    display: block;
+  }
+
+  h2 {
+    margin-bottom: 10px;
+  }
+
+  .description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  select {
+    font-size: 18px;
+    padding: 8px;
+    width: 100%;
+    margin: 20px 0;
+  }
+
+  button {
+    margin-top: 30px;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  #lifeReport {
+    max-width: 800px;
+    margin: 40px auto;
+    font-family: Arial, sans-serif;
+  }
+
+  /* Loader */
+  .loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 40px auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 </style>
 </head>
+
 <body>
 
 <div class="assessment-wrapper" id="assessmentWrapper"></div>
-  <div id="loader" style="display:none;text-align:center;margin-top:40px;">
-  <div class="spinner"></div>
-  <p>Generating your Life Report...</p>
-</div>
-
+<div id="loader" style="display:none;"><div class="loader"></div></div>
 <div id="lifeReport"></div>
 
 <script>
-/* ============================
-   CATEGORIES & QUESTIONS
-============================ */
-
+// ================== Categories & Questions ==================
 const categories = [
   {
     name: "Physical Health",
@@ -123,10 +153,6 @@ const categories = [
   }
 ];
 
-/* ============================
-   DROPDOWN OPTIONS
-============================ */
-
 const dropdownOptions = [
   { value: 1, label: "1 (Not good)" },
   { value: 2, label: "2 (Below average)" },
@@ -137,38 +163,64 @@ const dropdownOptions = [
 
 let currentIndex = 0;
 const answers = {};
+
 const wrapper = document.getElementById("assessmentWrapper");
 
+// Flatten all questions
 const flatQuestions = [];
-categories.forEach(cat => cat.questions.forEach(q => flatQuestions.push({ category: cat.key, text: q.text, description: q.description })));
+categories.forEach(cat => {
+  cat.questions.forEach(q => {
+    flatQuestions.push({ category: cat.key, text: q.text, description: q.description });
+  });
+});
 
+// Render questions
 flatQuestions.forEach((q, index) => {
   const div = document.createElement("div");
   div.className = "question" + (index === 0 ? " active" : "");
+
   let selectHTML = `<select id="select-${index}">`;
-  dropdownOptions.forEach(opt => selectHTML += `<option value="${opt.value}">${opt.label}</option>`);
+  dropdownOptions.forEach(opt => {
+    selectHTML += `<option value="${opt.value}">${opt.label}</option>`;
+  });
   selectHTML += `</select>`;
-  div.innerHTML = `<h2>${q.text}</h2><div class="description">${q.description}</div>${selectHTML}<button onclick="next(${index})">${index===flatQuestions.length-1 ? "Get My Life Report":"Next"}</button>`;
+
+  div.innerHTML = `
+    <h2>${q.text}</h2>
+    <div class="description">${q.description}</div>
+    ${selectHTML}
+    <button onclick="next(${index})">
+      ${index === flatQuestions.length - 1 ? "Get My Life Report" : "Next"}
+    </button>
+  `;
+
   wrapper.appendChild(div);
 });
 
+// ================== Functions ==================
 function next(index) {
   const select = document.getElementById(`select-${index}`);
   const question = flatQuestions[index];
+
   if (!answers[question.category]) answers[question.category] = {};
   answers[question.category][question.text] = Number(select.value);
+
   document.querySelectorAll(".question")[index].classList.remove("active");
   currentIndex++;
   if (currentIndex < flatQuestions.length) {
     document.querySelectorAll(".question")[currentIndex].classList.add("active");
-  } else submitAssessment();
+  } else {
+    submitAssessment();
+  }
 }
 
 function submitAssessment() {
-  document.getElementById("assessmentWrapper").style.display = "none";
+  const endpoint = "/.netlify/functions/life-report";
+
+  // Show loader
   document.getElementById("loader").style.display = "block";
 
-  fetch("/.netlify/functions/life-report", {
+  fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ assessment: answers })
@@ -176,6 +228,7 @@ function submitAssessment() {
   .then(res => res.json())
   .then(data => {
     document.getElementById("loader").style.display = "none";
+    document.getElementById("assessmentWrapper").style.display = "none";
     document.getElementById("lifeReport").innerHTML = data.report_html;
   })
   .catch(err => {
@@ -184,7 +237,6 @@ function submitAssessment() {
     console.error(err);
   });
 }
-
 </script>
 </body>
 </html>
