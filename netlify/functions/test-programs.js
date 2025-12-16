@@ -1,5 +1,3 @@
-import fetch from "node-fetch"; // only if using Node <18
-
 export async function handler(event, context) {
   try {
     const THINKIFIC_API_KEY = process.env.THINKIFIC_API_KEY;
@@ -18,7 +16,7 @@ export async function handler(event, context) {
 
     const programsData = await response.json();
 
-    console.log("Programs fetched:", programsData); // log to Netlify function logs
+    console.log("Programs fetched:", programsData);
 
     return {
       statusCode: 200,
