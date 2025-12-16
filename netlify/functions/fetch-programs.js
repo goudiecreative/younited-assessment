@@ -1,32 +1,24 @@
-// netlify/functions/fetch-programs.js
-import OpenAI from "openai";
+import fetch from "node-fetch"; // only for Node <18
 
-export async function handler(event, context) {
+export async function handler() {
   try {
-    const THINKIFIC_API_KEY = process.env.THINKIFIC_API_KEY;
-    const SUBDOMAIN = process.env.THINKIFIC_SUBDOMAIN;
+    const apiKey = process.env.THINKIFIC_API_KEY;
+    const subdomain = process.env.THINKIFIC_SUBDOMAIN;
 
-    const response = await fetch(`https://${SUBDOMAIN}.thinkific.com/api/public/v1/courses`, {
+    const res = await fetch(`https://${subdomain}.thinkific.com/api/public/v1/courses`, {
       headers: {
-        "X-Auth-API-Key": THINKIFIC_API_KEY,
-        "X-Auth-Subdomain": SUBDOMAIN
+        Authorization: `Bearer ${apiKey}`
       }
     });
 
-    if (!response.ok) {
-      throw new Error(`Thinkific API error: ${response.status}`);
+    if (!res.ok) {
+      throw new Error(`Thinkific API error: ${res.status} ${res.statusText}`);
     }
 
-    const programsData = await response.json();
+    const data = await res.json();
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(programsData)
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
+    return { statusCode: 200, body: JSON.stringify(data) };
+  } catch (err) {
+    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 }
