@@ -130,7 +130,7 @@ function next(index) {
 }
 
 function submitAssessment() {
-  const endpoint = "https://younited.netlify.app/.netlify/functions/life-report"; // <-- your Netlify function URL
+  const endpoint = "/.netlify/functions/life-report"; // <-- your Netlify function URL
 
   fetch(endpoint, {
     method: "POST",
