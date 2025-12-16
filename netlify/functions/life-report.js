@@ -1,28 +1,38 @@
 import OpenAI from "openai";
 
 export async function handler(event, context) {
-  console.log("Event body:", event.body);
-
   try {
-    if (!event.body) {
-      return { statusCode: 400, body: JSON.stringify({ error: "No data received" }) };
-    }
-
     const { assessment } = JSON.parse(event.body);
 
-    if (!assessment || Object.keys(assessment).length === 0) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Assessment is empty" }) };
-    }
+    // Fetch Thinkific programs
+    const THINKIFIC_API_KEY = process.env.THINKIFIC_API_KEY;
+    const SUBDOMAIN = process.env.THINKIFIC_SUBDOMAIN;
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const programsRes = await fetch(`https://${SUBDOMAIN}.thinkific.com/api/public/v1/courses`, {
+      headers: {
+        "X-Auth-API-Key": THINKIFIC_API_KEY,
+        "X-Auth-Subdomain": SUBDOMAIN
+      }
+    });
 
+    if (!programsRes.ok) throw new Error(`Thinkific API error: ${programsRes.status}`);
+    const programsData = await programsRes.json();
+
+    // Create OpenAI prompt
     const prompt = `
 You are a wellness coach. A user completed this assessment:
 ${JSON.stringify(assessment, null, 2)}
 
-Generate a comprehensive, motivational Life Report in HTML.
+Available programs:
+${JSON.stringify(programsData, null, 2)}
+
+Generate a motivational Life Report in HTML with:
+- Overview of Physical, Mental, Emotional, Relationships, Career, Spiritual
+- Positive reinforcement
+- Suggested programs from the list above
 `;
 
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
@@ -33,9 +43,7 @@ Generate a comprehensive, motivational Life Report in HTML.
     const report_html = response.choices[0].message.content;
 
     return { statusCode: 200, body: JSON.stringify({ report_html }) };
-
   } catch (error) {
-    console.error("Error in life-report function:", error);
     return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 }
