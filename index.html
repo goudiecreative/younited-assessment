@@ -17,6 +17,19 @@
     padding: 40px;
     position: relative;
   }
+  .spinner {
+  margin: 0 auto;
+  width: 50px;
+  height: 50px;
+  border: 6px solid #ccc;
+  border-top-color: #0077ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
   .question { display: none; }
   .question.active { display: block; }
   h2 { margin-bottom: 10px; }
