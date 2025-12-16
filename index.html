@@ -135,104 +135,54 @@ const dropdownOptions = [
   { value: 5, label: "5 (Excellent)" }
 ];
 
-/* ============================
-   STATE
-============================ */
-
 let currentIndex = 0;
 const answers = {};
-
-/* ============================
-   BUILD QUESTIONS
-============================ */
-
 const wrapper = document.getElementById("assessmentWrapper");
-const flatQuestions = [];
-categories.forEach(cat => {
-  cat.questions.forEach(q => {
-    flatQuestions.push({ category: cat.key, text: q.text, description: q.description });
-  });
-});
 
-// Create questions HTML
+const flatQuestions = [];
+categories.forEach(cat => cat.questions.forEach(q => flatQuestions.push({ category: cat.key, text: q.text, description: q.description })));
+
 flatQuestions.forEach((q, index) => {
   const div = document.createElement("div");
   div.className = "question" + (index === 0 ? " active" : "");
-
   let selectHTML = `<select id="select-${index}">`;
-  dropdownOptions.forEach(opt => {
-    selectHTML += `<option value="${opt.value}">${opt.label}</option>`;
-  });
+  dropdownOptions.forEach(opt => selectHTML += `<option value="${opt.value}">${opt.label}</option>`);
   selectHTML += `</select>`;
-
-  div.innerHTML = `
-    <h2>${q.text}</h2>
-    <div class="description">${q.description}</div>
-    ${selectHTML}
-    <button onclick="next(${index})">
-      ${index === flatQuestions.length - 1 ? "Get My Life Report" : "Next"}
-    </button>
-  `;
-
+  div.innerHTML = `<h2>${q.text}</h2><div class="description">${q.description}</div>${selectHTML}<button onclick="next(${index})">${index===flatQuestions.length-1 ? "Get My Life Report":"Next"}</button>`;
   wrapper.appendChild(div);
 });
-
-/* ============================
-   FUNCTIONS
-============================ */
 
 function next(index) {
   const select = document.getElementById(`select-${index}`);
   const question = flatQuestions[index];
-
   if (!answers[question.category]) answers[question.category] = {};
   answers[question.category][question.text] = Number(select.value);
-
   document.querySelectorAll(".question")[index].classList.remove("active");
-
   currentIndex++;
   if (currentIndex < flatQuestions.length) {
     document.querySelectorAll(".question")[currentIndex].classList.add("active");
-  } else {
-    submitAssessment();
-  }
+  } else submitAssessment();
 }
 
-/* ============================
-   SUBMIT TO NETLIFY FUNCTION WITH LOADER
-============================ */
-
 function submitAssessment() {
-  // Show loader
-  const wrapperDiv = document.getElementById("assessmentWrapper");
-  wrapperDiv.style.display = "none";
+  document.getElementById("assessmentWrapper").style.display = "none";
+  document.getElementById("loader").style.display = "block";
 
-  const loader = document.getElementById("loader");
-  loader.style.display = "block";
-
-  const endpoint = "/.netlify/functions/life-report";
-
-  fetch(endpoint, {
+  fetch("/.netlify/functions/life-report", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ assessment: answers })
   })
-    .then(res => res.json())
-    .then(data => {
-      loader.style.display = "none";
-      if (data.report_html) {
-        document.getElementById("lifeReport").innerHTML = data.report_html;
-      } else if (data.error) {
-        alert("Error: " + data.error);
-        wrapperDiv.style.display = "block";
-      }
-    })
-    .catch(err => {
-      loader.style.display = "none";
-      alert("There was an error generating your report.");
-      console.error(err);
-      wrapperDiv.style.display = "block";
-    });
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("lifeReport").innerHTML = data.report_html;
+  })
+  .catch(err => {
+    document.getElementById("loader").style.display = "none";
+    alert("There was an error generating your report.");
+    console.error(err);
+  });
 }
 
 </script>
