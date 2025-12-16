@@ -1,5 +1,3 @@
-import fetch from "node-fetch"; // only for Node <18
-
 export async function handler() {
   try {
     const apiKey = process.env.THINKIFIC_API_KEY;
