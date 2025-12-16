@@ -2,17 +2,17 @@
 
 export async function handler(event, context) {
   try {
-    // Get your Thinkific private API key from Netlify environment variables
     const THINKIFIC_API_KEY = process.env.THINKIFIC_API_KEY;
+    const THINKIFIC_SUBDOMAIN = process.env.THINKIFIC_SUBDOMAIN;
 
-    if (!THINKIFIC_API_KEY) {
-      throw new Error("THINKIFIC_API_KEY is not set in Netlify environment variables");
+    if (!THINKIFIC_API_KEY || !THINKIFIC_SUBDOMAIN) {
+      throw new Error("THINKIFIC_API_KEY or THINKIFIC_SUBDOMAIN not set in Netlify environment variables");
     }
 
-    // Fetch courses from Thinkific Private API
-    const response = await fetch("https://api.thinkific.com/api/public/v1/courses", {
+    const response = await fetch(`https://${THINKIFIC_SUBDOMAIN}.thinkific.com/api/public/v1/courses`, {
       headers: {
-        "Authorization": `Bearer ${THINKIFIC_API_KEY}`,
+        "X-Auth-API-Key": THINKIFIC_API_KEY,
+        "X-Auth-Subdomain": THINKIFIC_SUBDOMAIN,
         "Content-Type": "application/json"
       }
     });
