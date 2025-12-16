@@ -4,15 +4,26 @@
 <meta charset="UTF-8" />
 <title>Younited – Self Discovery Assessment</title>
 <style>
-body { font-family: Arial; background:#f7f7f7; margin:0; padding:40px; }
-.assessment-wrapper { max-width:700px; margin:auto; background:#fff; padding:40px; }
-.question { display:none; }
-.question.active { display:block; }
-h2 { margin-bottom:10px; }
-.description { font-size:14px; color:#555; margin-bottom:20px; }
-select { font-size:18px; padding:8px; width:100%; margin:20px 0; }
-button { margin-top:30px; padding:12px 20px; font-size:16px; cursor:pointer; }
-#lifeReport { max-width:800px; margin:40px auto; font-family:Arial; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 40px;
+  }
+  .assessment-wrapper {
+    max-width: 700px;
+    margin: auto;
+    background: #fff;
+    padding: 40px;
+    position: relative;
+  }
+  .question { display: none; }
+  .question.active { display: block; }
+  h2 { margin-bottom: 10px; }
+  .description { font-size: 14px; color: #555; margin-bottom: 20px; }
+  select { font-size: 18px; padding: 8px; width: 100%; margin: 20px 0; }
+  button { margin-top: 30px; padding: 12px 20px; font-size: 16px; cursor: pointer; }
+  #lifeReport { max-width: 800px; margin: 40px auto; font-family: Arial, sans-serif; }
 </style>
 </head>
 <body>
@@ -23,46 +34,46 @@ button { margin-top:30px; padding:12px 20px; font-size:16px; cursor:pointer; }
 <script>
 const categories = [
   { name:"Physical Health", key:"physical", questions:[
-    {text:"Energy levels throughout the day", description:"How energized do you feel throughout the day?"},
-    {text:"Sleep quality", description:"Are you able to sleep well and wake up refreshed?"},
-    {text:"Nutrition habits", description:"How balanced and consistent is your diet?"},
-    {text:"Physical activity / movement", description:"How often and effectively do you move your body?"},
-    {text:"Overall physical wellbeing", description:"Your overall physical health."}
+      {text:"Energy levels throughout the day", description:"How energized do you feel throughout the day?"},
+      {text:"Sleep quality", description:"Are you able to sleep well and wake up refreshed?"},
+      {text:"Nutrition habits", description:"How balanced and consistent is your diet?"},
+      {text:"Physical activity / movement", description:"How often and effectively do you move your body?"},
+      {text:"Overall physical wellbeing", description:"Your overall physical health."}
   ]},
   { name:"Mental Health", key:"mental", questions:[
-    {text:"Stress levels", description:"How well do you manage daily stress?"},
-    {text:"Focus and mental clarity", description:"How clear is your thinking?"},
-    {text:"Decision-making confidence", description:"How confident are you making choices?"},
-    {text:"Mental energy / alertness", description:"How alert do you feel?"},
-    {text:"Overall mental wellbeing", description:"Your overall mental health."}
+      {text:"Stress levels", description:"How well do you manage daily stress?"},
+      {text:"Focus and mental clarity", description:"How clear and sharp is your thinking?"},
+      {text:"Decision-making confidence", description:"How confident are you in making choices?"},
+      {text:"Mental energy / alertness", description:"How alert and mentally active do you feel?"},
+      {text:"Overall mental wellbeing", description:"Your overall mental balance and resilience."}
   ]},
   { name:"Emotional Health", key:"emotional", questions:[
-    {text:"Emotional resilience", description:"How well do you bounce back from setbacks?"},
-    {text:"Ability to manage emotions", description:"How well do you handle your emotions?"},
-    {text:"Confidence / self-esteem", description:"How positive is your self-image?"},
-    {text:"Stress coping ability", description:"How effectively do you cope with stress?"},
-    {text:"Overall emotional wellbeing", description:"Your overall emotional health."}
+      {text:"Emotional resilience", description:"How well can you bounce back from setbacks?"},
+      {text:"Ability to manage emotions", description:"Can you handle your emotions constructively?"},
+      {text:"Confidence / self-esteem", description:"How positive is your self-image?"},
+      {text:"Stress coping ability", description:"How effectively do you cope with emotional stress?"},
+      {text:"Overall emotional wellbeing", description:"Your overall emotional balance and satisfaction."}
   ]},
   { name:"Relationships", key:"relationships", questions:[
-    {text:"Quality of close relationships", description:"How fulfilling are your relationships?"},
-    {text:"Communication skills", description:"How well do you communicate?"},
-    {text:"Support network strength", description:"Do you have people to rely on?"},
-    {text:"Boundaries with others", description:"How healthy are your boundaries?"},
-    {text:"Overall relationship wellbeing", description:"Your overall relationships."}
+      {text:"Quality of close relationships", description:"How fulfilling are your close connections?"},
+      {text:"Communication skills", description:"How effectively do you communicate with others?"},
+      {text:"Support network strength", description:"Do you have people to rely on when needed?"},
+      {text:"Boundaries with others", description:"How healthy are your personal boundaries?"},
+      {text:"Overall relationship wellbeing", description:"Your overall satisfaction with relationships."}
   ]},
   { name:"Career & Purpose", key:"career", questions:[
-    {text:"Job satisfaction", description:"How satisfied are you with your work?"},
-    {text:"Sense of purpose", description:"Does your work align with your purpose?"},
-    {text:"Motivation & engagement", description:"How engaged are you?"},
-    {text:"Work–life balance", description:"How balanced is your work and personal life?"},
-    {text:"Overall career wellbeing", description:"Your overall career satisfaction."}
+      {text:"Job satisfaction", description:"How satisfied are you with your work?"},
+      {text:"Sense of purpose", description:"Do you feel your work aligns with your purpose?"},
+      {text:"Motivation & engagement", description:"How engaged and motivated are you?"},
+      {text:"Work–life balance", description:"How well do you balance work and personal life?"},
+      {text:"Overall career wellbeing", description:"Your overall sense of career satisfaction."}
   ]},
   { name:"Mindfulness / Spiritual", key:"spiritual", questions:[
-    {text:"Presence / mindfulness in daily life", description:"How mindful are you daily?"},
-    {text:"Inner calm and peace", description:"How calm and centered do you feel?"},
-    {text:"Connection to purpose or meaning", description:"Do you feel aligned with a deeper purpose?"},
-    {text:"Self-reflection habits", description:"How often do you reflect on your thoughts?"},
-    {text:"Overall spiritual wellbeing", description:"Your overall mindfulness and spiritual balance."}
+      {text:"Presence / mindfulness in daily life", description:"How mindful are you in day-to-day moments?"},
+      {text:"Inner calm and peace", description:"How calm and centered do you feel internally?"},
+      {text:"Connection to purpose or meaning", description:"Do you feel aligned with a deeper purpose?"},
+      {text:"Self-reflection habits", description:"How often do you reflect on your thoughts and actions?"},
+      {text:"Overall spiritual wellbeing", description:"Your overall spiritual and mindfulness balance."}
   ]}
 ];
 
@@ -76,56 +87,69 @@ const dropdownOptions = [
 
 let currentIndex = 0;
 const answers = {};
-
 const wrapper = document.getElementById("assessmentWrapper");
 
 const flatQuestions = [];
 categories.forEach(cat => {
-  cat.questions.forEach(q => flatQuestions.push({category:cat.key, text:q.text, description:q.description}));
+  cat.questions.forEach(q => {
+    flatQuestions.push({ category: cat.key, text: q.text, description: q.description });
+  });
 });
 
-flatQuestions.forEach((q, index)=>{
+flatQuestions.forEach((q, index) => {
   const div = document.createElement("div");
-  div.className = "question" + (index===0?" active":"");
+  div.className = "question" + (index === 0 ? " active" : "");
 
   let selectHTML = `<select id="select-${index}">`;
-  dropdownOptions.forEach(opt=>selectHTML+=`<option value="${opt.value}">${opt.label}</option>`);
-  selectHTML+=`</select>`;
+  dropdownOptions.forEach(opt => {
+    selectHTML += `<option value="${opt.value}">${opt.label}</option>`;
+  });
+  selectHTML += `</select>`;
 
   div.innerHTML = `
     <h2>${q.text}</h2>
     <div class="description">${q.description}</div>
     ${selectHTML}
-    <button onclick="next(${index})">${index===flatQuestions.length-1?"Get My Life Report":"Next"}</button>
+    <button onclick="next(${index})">
+      ${index === flatQuestions.length - 1 ? "Get My Life Report" : "Next"}
+    </button>
   `;
   wrapper.appendChild(div);
 });
 
-function next(index){
-  const select=document.getElementById(`select-${index}`);
-  const question=flatQuestions[index];
-  if(!answers[question.category]) answers[question.category]={};
-  answers[question.category][question.text]=Number(select.value);
+function next(index) {
+  const select = document.getElementById(`select-${index}`);
+  const question = flatQuestions[index];
+  if (!answers[question.category]) answers[question.category] = {};
+  answers[question.category][question.text] = Number(select.value);
 
   document.querySelectorAll(".question")[index].classList.remove("active");
-
   currentIndex++;
-  if(currentIndex<flatQuestions.length){
+  if (currentIndex < flatQuestions.length) {
     document.querySelectorAll(".question")[currentIndex].classList.add("active");
-  } else submitAssessment();
+  } else {
+    submitAssessment();
+  }
 }
 
-function submitAssessment(){
-  const endpoint="/.netlify/functions/life-report";
+function submitAssessment() {
+  const endpoint = "/.netlify/functions/life-report"; // replace with your deployed function URL
 
-  fetch(endpoint,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({assessment:answers})
+  fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ assessment: answers })
   })
-  .then(res=>res.json())
-  .then(data=>{
-    document.getElementById("assessmentWrapper").style.display="none";
-    document.getElementById("lifeReport").innerHTML=data.report_html||"<p>No report returned</p>";
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("assessmentWrapper").style.display = "none";
+    document.getElementById("lifeReport").innerHTML = data.report_html;
   })
-  .catch(err=>{
+  .catch(err => {
+    alert("There was an error generating your report.");
+    console.error(err);
+  });
+}
+</script>
+</body>
+</html>
